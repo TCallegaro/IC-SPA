@@ -98,3 +98,51 @@ npm run build
 ```
 
 Os arquivos gerados ficarão disponíveis na pasta `dist`.
+
+Integração Contínua
+
+Ferramenta utilizada
+
+Foi utilizado o GitHub Actions para implementar a integração contínua (CI) do projeto Peçonha Zero. A ferramenta permite automatizar tarefas de validação do código-fonte a cada alteração enviada ao repositório.
+
+Quando o pipeline é executado
+
+O workflow é executado automaticamente quando ocorre um push para a branch main ou quando um Pull Request é aberto ou atualizado com destino à branch main.
+
+Também é possível iniciar uma execução manualmente pela aba Actions do GitHub, utilizando o evento workflow_dispatch.
+
+Etapas do pipeline
+
+O pipeline é composto pelas seguintes etapas:
+
+Checkout: utiliza a ação actions/checkout@v4 para disponibilizar o código-fonte no ambiente de execução.
+
+Configuração do Node.js: utiliza actions/setup-node@v4 com Node.js 22 para preparar o ambiente.
+
+Instalação das dependências: executa npm ci para instalar as dependências registradas no arquivo package-lock.json.
+
+Build: executa npm run build para compilar a aplicação React com Vite e verificar se o processo de geração dos arquivos de produção é concluído.
+
+Se todas as etapas forem executadas corretamente, o workflow será marcado como bem-sucedido. Caso alguma etapa apresente erro, a execução será marcada como falha e os logs poderão ser consultados no GitHub Actions.
+
+Como verificar uma execução
+
+Acesse o repositório do Peçonha Zero no GitHub.
+
+Abra a aba Actions.
+
+Selecione o workflow CI - Peçonha Zero.
+
+Abra a execução correspondente ao commit enviado.
+
+Consulte as etapas do pipeline para verificar o resultado da instalação das dependências e do build.
+
+Uma execução bem-sucedida indica que o código foi obtido, as dependências foram instaladas e a aplicação foi compilada sem erros de build. Isso não garante, por si só, que todas as funcionalidades estejam livres de defeitos.
+
+Fluxo implementado
+
+O fluxo de integração contínua segue a sequência:
+
+Push/Pull Request → Checkout → Configuração do Node.js → npm ci → npm run build → Resultado
+
+A implementação automatiza a validação básica do projeto e permite identificar problemas de compilação antes de futuras evoluções da aplicação.
