@@ -68,7 +68,7 @@ Eventuais anúncios e conteúdos patrocinados deverão ser identificados clarame
 2. Entre na pasta do projeto:
 
    ```bash
-   cd peconha-zero
+   cd spa-ic
    ```
 
 3. Instale as dependências:
@@ -127,11 +127,11 @@ Se todas as etapas forem executadas corretamente, o workflow será marcado como 
 
 Como verificar uma execução
 
-Acesse o repositório do Peçonha Zero no GitHub.
+Acesse o repositório do projeto no GitHub.
 
 Abra a aba Actions.
 
-Selecione o workflow CI - Peçonha Zero.
+Selecione o workflow
 
 Abra a execução correspondente ao commit enviado.
 
