@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
@@ -29,6 +31,26 @@ jobs:
 
       - name: Instalar dependências
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Testes unitários
+        run: npm test
+
+      - name: Cobertura de testes
+        run: npm run test:coverage
+
+      - name: SonarQube Cloud Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          args: >-
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.qualitygate.wait=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
 
       - name: Gerar build da aplicação
         run: npm run build

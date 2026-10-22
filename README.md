@@ -31,8 +31,8 @@ A SPA busca centralizar essas informações em uma plataforma de fácil utiliza�
 ## Tecnologias utilizadas
 
 - **React:** desenvolvimento da interface e dos componentes reutilizáveis.
-- **Vite:** ferramenta para execução do ambiente de desenvolvimento e geração da versão de produção.
-- **JavaScript:** implementação das funcionalidades e interações.
+- **Next.js:** framework React usado no ambiente de desenvolvimento e na geração da versão de produção.
+- **TypeScript:** implementação tipada das funcionalidades e interações.
 - **CSS:** estilização e adaptação da interface para diferentes tamanhos de tela.
 - **Lucide React:** biblioteca de ícones utilizada na interface.
 - **Git e GitHub:** controle de versão e hospedagem do código-fonte.
@@ -74,7 +74,7 @@ Eventuais anúncios e conteúdos patrocinados deverão ser identificados clarame
 3. Instale as dependências:
 
    ```bash
-   npm install
+   npm ci
    ```
 
 4. Inicie o servidor de desenvolvimento:
@@ -83,10 +83,10 @@ Eventuais anúncios e conteúdos patrocinados deverão ser identificados clarame
    npm run dev
    ```
 
-5. Acesse no navegador o endereço local informado pelo Vite, normalmente:
+5. Acesse no navegador:
 
    ```text
-   http://localhost:5173
+   http://localhost:3000
    ```
 
 ### Gerar a versão de produção
@@ -97,52 +97,45 @@ Para gerar os arquivos de produção, execute:
 npm run build
 ```
 
-Os arquivos gerados ficarão disponíveis na pasta `dist`.
+O Next.js gera os arquivos de produção na pasta `.next`.
 
-Integração Contínua
+## Integração Contínua
 
-Ferramenta utilizada
+### Ferramentas utilizadas
 
-Foi utilizado o GitHub Actions para implementar a integração contínua (CI) do projeto Peçonha Zero. A ferramenta permite automatizar tarefas de validação do código-fonte a cada alteração enviada ao repositório.
+GitHub Actions, Vitest e SonarQube Cloud. O workflow executa validações automaticamente e envia ao SonarQube o relatório LCOV gerado pelos testes.
 
-Quando o pipeline é executado
+Configure `SONAR_TOKEN` como um secret e `SONAR_PROJECT_KEY` e `SONAR_ORGANIZATION` como variables em **Settings → Secrets and variables → Actions**. Use os valores correspondentes ao projeto e à organização cadastrados no SonarQube Cloud.
 
-O workflow é executado automaticamente quando ocorre um push para a branch main ou quando um Pull Request é aberto ou atualizado com destino à branch main.
+### Quando o pipeline é executado
 
-Também é possível iniciar uma execução manualmente pela aba Actions do GitHub, utilizando o evento workflow_dispatch.
+O workflow é executado em pushes e pull requests direcionados à branch `main`. Também pode ser iniciado manualmente pela aba **Actions**.
 
-Etapas do pipeline
+### Etapas do pipeline
 
-O pipeline é composto pelas seguintes etapas:
+O pipeline segue esta sequência:
 
-Checkout: utiliza a ação actions/checkout@v4 para disponibilizar o código-fonte no ambiente de execução.
+1. Checkout do código com `actions/checkout@v4`.
+2. Configuração do Node.js 22 com `actions/setup-node@v4`.
+3. Instalação determinística das dependências com `npm ci`.
+4. Análise estática com `npm run lint`.
+5. Testes unitários com `npm test`.
+6. Testes com cobertura com `npm run test:coverage`, que gera `coverage/lcov.info`.
+7. Análise pelo SonarQube Cloud com o relatório LCOV; o workflow aguarda o resultado do Quality Gate.
+8. Build de produção com `npm run build`.
 
-Configuração do Node.js: utiliza actions/setup-node@v4 com Node.js 22 para preparar o ambiente.
+Se uma etapa falhar, as etapas seguintes não serão executadas e os detalhes estarão disponíveis nos logs da execução no GitHub Actions.
 
-Instalação das dependências: executa npm ci para instalar as dependências registradas no arquivo package-lock.json.
+O arquivo `sonar-project.properties` informa ao scanner os diretórios do código e dos testes e a localização do relatório de cobertura.
 
-Build: executa npm run build para compilar a aplicação React com Vite e verificar se o processo de geração dos arquivos de produção é concluído.
+### Como verificar uma execução
 
-Se todas as etapas forem executadas corretamente, o workflow será marcado como bem-sucedido. Caso alguma etapa apresente erro, a execução será marcada como falha e os logs poderão ser consultados no GitHub Actions.
+Na página do repositório no GitHub, abra **Actions**, selecione o workflow **CI** e escolha uma execução. Confira os logs de cada etapa e consulte o dashboard do projeto no SonarQube Cloud para ver a análise e o Quality Gate.
 
-Como verificar uma execução
+### Fluxo implementado
 
-Acesse o repositório do projeto no GitHub.
+Push/Pull Request → Checkout → Setup Node.js → Instalação → Lint → Testes unitários → Cobertura → SonarQube Scan → Build
 
-Abra a aba Actions.
+## Evidências da análise de qualidade
 
-Selecione o workflow
-
-Abra a execução correspondente ao commit enviado.
-
-Consulte as etapas do pipeline para verificar o resultado da instalação das dependências e do build.
-
-Uma execução bem-sucedida indica que o código foi obtido, as dependências foram instaladas e a aplicação foi compilada sem erros de build. Isso não garante, por si só, que todas as funcionalidades estejam livres de defeitos.
-
-Fluxo implementado
-
-O fluxo de integração contínua segue a sequência:
-
-Push/Pull Request → Checkout → Configuração do Node.js → npm ci → npm run build → Resultado
-
-A implementação automatiza a validação básica do projeto e permite identificar problemas de compilação antes de futuras evoluções da aplicação.
+As capturas serão incluídas em `docs/evidencias/` após a execução integrada do workflow e a confirmação dos resultados no SonarQube Cloud. Não foram criadas capturas simuladas.
