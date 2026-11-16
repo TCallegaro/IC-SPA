@@ -1,5 +1,5 @@
 
-name: GitHub Actions - SonarQube Cloud
+name: SonarQube - GitHub Actions
 
 on:
   push:
@@ -10,54 +10,53 @@ on:
 
 jobs:
   build:
-    name: Build, Test and Analyze
-    runs-on: ubuntu-latest
+    name: Build and analyze
+    runs-on: windows-latest
 
     steps:
-      # 1. Baixar o código do repositório
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # 1. Checkout do repositório
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
 
-      # 2. Configurar Node.js
+      # 2. Configuração do Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      # 3. Instalar dependências
+      # 3. Instalação das dependências
       - name: Install dependencies
         run: npm ci
 
-      # 4. Executar análise de código (Lint)
+      # 4. Análise de código
       - name: Lint
         run: npm run lint
 
-      # 5. Executar testes unitários
+      # 5. Testes unitários
       - name: Unit tests
         run: npm test
 
-      # 6. Gerar relatório de cobertura
+      # 6. Cobertura de testes
       - name: Test coverage
         run: npm run coverage
 
-      # 7. Compilar o projeto
+      # 7. Build do projeto
       - name: Build
         run: npm run build
 
       # 8. Cache do SonarQube
       - name: Cache SonarQube packages
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # 9. Análise de qualidade no SonarQube Cloud
-      - name: SonarQube Cloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+      # 9. Análise no SonarQube Cloud
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
